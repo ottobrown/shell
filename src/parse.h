@@ -1,6 +1,13 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-char** parse(char* input, size_t* argc);
+typedef struct {
+    int argc;
+    char** argv;
+} Args;
+
+Args parse(char* input);
+
+void free_args(Args args);
 
 #endif

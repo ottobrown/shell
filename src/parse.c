@@ -1,36 +1,44 @@
 #include <string.h>
 #include <stdlib.h>
+#include "parse.h"
 
 /// These chars can separate arguments to a command
 const char SEPARATORS[] = " \n\t\r\f\v";
 
-/// returns an array containing the arguments, where index `0` is the path
-/// to the command to be run
-char** parse(char* input, size_t* argc) {
-    *argc = 1;
-    char** argv = malloc(sizeof(char*));
+Args parse(char* input) {
+    Args args;
+
+    size_t allocated = 3;
     size_t i = 0;
+
+    args.argv = (char**) malloc(allocated * sizeof(char*));
 
     char* token = strtok(input, SEPARATORS);
     while (token != NULL) {
-        if (i >= *argc) {
-            *argc += 5;
-            argv = realloc(argv, (*argc) * sizeof(char*));
+        if (i >= allocated) {
+            allocated += 5;
+            args.argv = realloc(args.argv, (allocated) * sizeof(char*));
         }
 
-        argv[i] = strdup(token);
+        args.argv[i] = strdup(token);
 
         token = strtok(NULL, SEPARATORS);
         i++;
     }
-    if (i >= *argc) {
-        *argc += 1;
-        argv = realloc(argv, (*argc) * sizeof(char*));
+    if (i >= allocated) {
+        allocated += 1;
+        args.argv = realloc(args.argv, allocated * sizeof(char*));
     }
 
-    argv[i] = NULL;
+    args.argv[i] = NULL;
+    args.argc = i+1;
 
     free(token);
 
-    return argv;
+    return args;
+}
+
+void free_args(Args args) {
+    for(int i=0; i<args.argc; i++) free(args.argv[i]);
+    free(args.argv);
 }

@@ -1,19 +1,25 @@
 #include <unistd.h>
+#include <errno.h>
 #include <sys/wait.h>
+#include "shell.h"
 
 /// Creates a fork and runs the specified program with the specified arguments
-/// `args[0]` is the path to the command to be run
-int run_command(char** args) {
+///
+/// return:
+///    `0` if OK
+///    `-1` if `fork` fails
+///    `errno` if `execvp` fails
+int run_command(Args args) {
     int rc = fork();
 
     if (rc < 0) { /* Our `fork()` failed */
         return 1;
     }
     if (rc == 0) { /* We are in the child process */
-        execvp(args[0], args);
+        execvp(args.argv[0], args.argv);
 
         // (if `exexvp` returns, an error has occured)
-        return 2;
+        return errno;
     }
     else { /* We are in the parent process */
         (void) wait(NULL);

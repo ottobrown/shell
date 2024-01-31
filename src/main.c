@@ -3,6 +3,18 @@
 #include "shell.h"
 #include "parse.h"
 
+void print_cmd_error(int e) {
+    switch (e) {
+        case 0:
+            return;
+        case -1:
+            fprintf(stderr, "Failed to create fork!\n");
+            break;
+        default:
+            perror("");
+    };
+}
+
 int main(void) {
     while (1) {
         printf("> ");
@@ -11,14 +23,14 @@ int main(void) {
         char* s = malloc(size);
         getline(&s, &size, stdin);
 
-        size_t arg_count;
-        char** args = parse(s, &arg_count);
+        Args cmd_args = parse(s);
 
-        run_command(args);
+        int r = run_command(cmd_args);
 
-        for(size_t i = 0; i<arg_count; i++) free(args[i]);
+        if (r) print_cmd_error(r);
+
         free(s);
-        free(args);
+        free_args(cmd_args);
     }
 
     return 0;
