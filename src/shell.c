@@ -1,7 +1,21 @@
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/wait.h>
 #include "shell.h"
+#include "builtin.h"
+
+/// Finds a matching index on `BUILTIN_NAMES`
+/// or `-1` if none exists
+int find_builtin(char* name) {
+    for(int i=0; BUILTIN_NAMES[i] != NULL; i++) {
+        if (!strcmp(BUILTIN_NAMES[i], name)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
 
 /// Creates a fork and runs the specified program with the specified arguments
 ///
@@ -10,6 +24,13 @@
 ///    `-1` if `fork` fails
 ///    `errno` if `execvp` fails
 int run_command(Args args) {
+    // search for builtins first
+    int builtin_i = find_builtin(args.argv[0]);
+    if (builtin_i >= 0) {
+        (BUILTIN_FUNCTIONS[builtin_i])(args.argc, args.argv);
+    }
+
+    // search for builtins first
     int rc = fork();
 
     if (rc < 0) { /* Our `fork()` failed */

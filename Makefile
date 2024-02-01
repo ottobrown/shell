@@ -7,7 +7,7 @@ LDFLAGS_DEBUG =
 CFLAGS_RELEASE = -O3 -DNDEBUG
 LDFLAGS_RELEASE =
 
-SRCS = src/main.c src/shell.c src/parse.c
+SRCS = src/main.c src/shell.c src/parse.c src/builtin.c
 OBJS = $(SRCS:.c=.o)
 TARGET = shell
 
