@@ -10,6 +10,7 @@
 int find_builtin(char* name) {
     for(int i=0; BUILTIN_NAMES[i] != NULL; i++) {
         if (!strcmp(BUILTIN_NAMES[i], name)) {
+            //printf("found builtin %d\n", i);
             return i;
         }
     }
@@ -28,6 +29,7 @@ int run_command(Args args) {
     int builtin_i = find_builtin(args.argv[0]);
     if (builtin_i >= 0) {
         (BUILTIN_FUNCTIONS[builtin_i])(args.argc, args.argv);
+        return 0;
     }
 
     // search for builtins first

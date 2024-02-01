@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "shell.h"
 #include "parse.h"
 
@@ -17,7 +18,9 @@ void print_cmd_error(int e) {
 
 int main(void) {
     while (1) {
-        printf("> ");
+        char* cwd = getcwd(NULL, 0);
+
+        printf("%s> ", cwd);
 
         size_t size = 30;
         char* s = malloc(size);
@@ -30,6 +33,7 @@ int main(void) {
         if (r) print_cmd_error(r);
 
         free(s);
+        free(cwd);
         free_args(cmd_args);
     }
 

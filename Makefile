@@ -4,7 +4,7 @@ CFLAGS_COMMON = -Wall -Wextra
 CFLAGS_DEBUG = -g -O0 -UNDEBUG
 LDFLAGS_DEBUG =
 
-CFLAGS_RELEASE = -O3 -DNDEBUG
+CFLAGS_RELEASE = -s -O3 -DNDEBUG
 LDFLAGS_RELEASE =
 
 SRCS = src/main.c src/shell.c src/parse.c src/builtin.c
