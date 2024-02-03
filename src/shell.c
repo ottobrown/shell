@@ -10,7 +10,6 @@
 int find_builtin(char* name) {
     for(int i=0; BUILTIN_NAMES[i] != NULL; i++) {
         if (!strcmp(BUILTIN_NAMES[i], name)) {
-            //printf("found builtin %d\n", i);
             return i;
         }
     }
@@ -18,35 +17,55 @@ int find_builtin(char* name) {
     return -1;
 }
 
-/// Creates a fork and runs the specified program with the specified arguments
-///
-/// return:
-///    `0` if OK
-///    `-1` if `fork` fails
-///    `errno` if `execvp` fails
-int run_command(Args args) {
+int run_direct(int argc, char** argv) {
+    // Do nothing if no arguments are given
+    if (argc == 0) return 0;
+
     // search for builtins first
-    int builtin_i = find_builtin(args.argv[0]);
+    int builtin_i = find_builtin(argv[0]);
     if (builtin_i >= 0) {
-        (BUILTIN_FUNCTIONS[builtin_i])(args.argc, args.argv);
+        (BUILTIN_FUNCTIONS[builtin_i])(argc, argv);
         return 0;
     }
 
-    // search for builtins first
     int rc = fork();
 
     if (rc < 0) { /* Our `fork()` failed */
         return 1;
     }
     if (rc == 0) { /* We are in the child process */
-        execvp(args.argv[0], args.argv);
+        execvp(argv[0], argv);
 
         // (if `exexvp` returns, an error has occured)
-        return errno;
+        _exit(errno);
     }
     else { /* We are in the parent process */
-        (void) wait(NULL);
-    }
+        int status;
+        (void) wait(&status);
 
-    return 0;
+        if (status && WIFEXITED(status)) {
+            int real_status = WEXITSTATUS(status);
+            errno = real_status;
+            return -3;
+        }
+        return 0;
+    }
+}
+
+/// Handle pipes, etc. and run
+/// This will mangle the `Args` and render it unusable
+///
+/// return:
+///    `0` if OK
+///    `-1` if `fork` fails
+///    `-2` if `pipe` fails
+///    `-3` if `execvp` fails
+int run_command(Args args) {
+    /*
+    for(size_t i=0; i<args.num_pipes; i++) {
+        int fd[2];
+        if (pipe(fd) == -1) return -2;
+    }
+    */
+    return run_direct(args.argc, args.argv);
 }

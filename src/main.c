@@ -9,10 +9,17 @@ void print_cmd_error(int e) {
         case 0:
             return;
         case -1:
-            fprintf(stderr, "Failed to create fork!\n");
+            perror("fork failed");
+            break;
+        case -2:
+            perror("pipe failed");
+            break;
+        case -3:
+            perror("execvp exited");
             break;
         default:
-            perror("");
+            fprintf(stderr, "unknown error code\n");
+            break;
     };
 }
 

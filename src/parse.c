@@ -5,6 +5,9 @@
 /// These chars can separate arguments to a command
 const char SEPARATORS[] = " \n\t\r\f\v";
 
+/// Splits the given string with the following separators:
+/// `\n`, `\t`, `\r`, `\f`, `\v`
+/// and places a NULL at the end
 Args parse(char* input) {
     Args args;
 
@@ -12,7 +15,9 @@ Args parse(char* input) {
     size_t i = 0;
 
     args.argv = (char**) malloc(allocated * sizeof(char*));
-
+    args.num_pipes = 1;
+    args.pipes = (size_t*) malloc(args.num_pipes * sizeof(size_t));
+    
     char* token = strtok(input, SEPARATORS);
     while (token != NULL) {
         if (i >= allocated) {
@@ -21,6 +26,13 @@ Args parse(char* input) {
         }
 
         args.argv[i] = strdup(token);
+        
+        if (!strcmp(token, "|")) {
+            args.pipes[args.num_pipes - 1] = i;
+
+            args.num_pipes ++;
+            args.pipes = realloc(args.pipes, args.num_pipes * sizeof(size_t));
+        }
 
         token = strtok(NULL, SEPARATORS);
         i++;
@@ -31,7 +43,8 @@ Args parse(char* input) {
     }
 
     args.argv[i] = NULL;
-    args.argc = i+1;
+    // This does not include the `NULL` the end
+    args.argc = i;
 
     free(token);
 
@@ -41,4 +54,5 @@ Args parse(char* input) {
 void free_args(Args args) {
     for(int i=0; i<args.argc; i++) free(args.argv[i]);
     free(args.argv);
+    free(args.pipes);
 }
