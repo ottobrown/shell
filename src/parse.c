@@ -15,8 +15,6 @@ Args parse(char* input) {
     size_t i = 0;
 
     args.argv = (char**) malloc(allocated * sizeof(char*));
-    args.num_pipes = 1;
-    args.pipes = (size_t*) malloc(args.num_pipes * sizeof(size_t));
     
     char* token = strtok(input, SEPARATORS);
     while (token != NULL) {
@@ -27,13 +25,6 @@ Args parse(char* input) {
 
         args.argv[i] = strdup(token);
         
-        if (!strcmp(token, "|")) {
-            args.pipes[args.num_pipes - 1] = i;
-
-            args.num_pipes ++;
-            args.pipes = realloc(args.pipes, args.num_pipes * sizeof(size_t));
-        }
-
         token = strtok(NULL, SEPARATORS);
         i++;
     }
@@ -54,5 +45,4 @@ Args parse(char* input) {
 void free_args(Args args) {
     for(int i=0; i<args.argc; i++) free(args.argv[i]);
     free(args.argv);
-    free(args.pipes);
 }

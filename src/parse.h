@@ -4,9 +4,6 @@
 typedef struct {
     int argc;
     char** argv;
-
-    size_t* pipes;
-    size_t num_pipes;
 } Args;
 
 Args parse(char* input);

@@ -12,9 +12,6 @@ void print_cmd_error(int e) {
             perror("fork failed");
             break;
         case -2:
-            perror("pipe failed");
-            break;
-        case -3:
             perror("execvp exited");
             break;
         default:

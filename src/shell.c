@@ -46,26 +46,18 @@ int run_direct(int argc, char** argv) {
         if (status && WIFEXITED(status)) {
             int real_status = WEXITSTATUS(status);
             errno = real_status;
-            return -3;
+            return -2;
         }
         return 0;
     }
 }
 
-/// Handle pipes, etc. and run
 /// This will mangle the `Args` and render it unusable
 ///
 /// return:
 ///    `0` if OK
 ///    `-1` if `fork` fails
-///    `-2` if `pipe` fails
-///    `-3` if `execvp` fails
+///    `-2` if `execvp` fails
 int run_command(Args args) {
-    /*
-    for(size_t i=0; i<args.num_pipes; i++) {
-        int fd[2];
-        if (pipe(fd) == -1) return -2;
-    }
-    */
     return run_direct(args.argc, args.argv);
 }
