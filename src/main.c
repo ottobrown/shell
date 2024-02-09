@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "shell.h"
 #include "parse.h"
+#include "escape.h"
 
 void print_cmd_error(int e) {
     switch (e) {
@@ -24,7 +25,9 @@ int main(void) {
     while (1) {
         char* cwd = getcwd(NULL, 0);
 
+        set_fg_color(RED);
         printf("%s> ", cwd);
+        set_default_color();
 
         size_t size = 30;
         char* s = malloc(size);
