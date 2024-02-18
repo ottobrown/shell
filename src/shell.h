@@ -1,8 +1,15 @@
-#include "parse.h"
-
 #ifndef SHELL_H
 #define SHELL_H
 
-int run_command(Args args);
+enum ShellResult {
+    OK = 0,
+    EXECVP_RETURNED,
+    FORK_FAILED,
+};
+
+/// Input: list of arguments terminated by `NULL`
+///
+/// Example input: ["grep", "-ir", "TODO", "src/", "|", "less"]
+enum ShellResult run_command(char** args);
 
 #endif

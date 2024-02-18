@@ -1,13 +1,9 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-typedef struct {
-    int argc;
-    char** argv;
-} Args;
-
-Args parse(char* input);
-
-void free_args(Args args);
+/// Input: the string given to the shell prompt
+///
+/// Output: input split up into arguments
+char** parse(char* input);
 
 #endif
