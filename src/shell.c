@@ -56,13 +56,13 @@ enum ShellResult run_command(char** args) {
     int i = 0;
     while(1) {
         if (args[i] == NULL) {
-            return run_direct(i+1, args);
+            return run_direct(i, args);
         }
 
         if( !strcmp(args[i], ";") ) {
             // Run the command to the left of the `;`
             args[i] = NULL;
-            enum ShellResult left = run_direct(i+1, args);
+            enum ShellResult left = run_direct(i, args);
 
             // If the shell fails to run the first command, return.
             // It doesn't matter if the program itself succeeds or fails.
@@ -75,4 +75,6 @@ enum ShellResult run_command(char** args) {
 
         i++;
     }
+
+    return OK;
 }
