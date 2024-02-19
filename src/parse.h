@@ -1,9 +1,17 @@
 #ifndef PARSE_H
 #define PARSE_H
 
+typedef struct {
+    /// used to make sure all strings in `args` are `free`d
+    size_t max;
+    char** args;
+} Args;
+
 /// Input: the string given to the shell prompt
 ///
 /// Output: input split up into arguments
-char** parse(char* input);
+Args parse(char* input);
+
+void free_args(Args args);
 
 #endif
