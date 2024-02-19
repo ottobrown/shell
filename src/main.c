@@ -6,6 +6,7 @@
 #include "shell.h"
 #include "parse.h"
 #include "escape.h"
+#include "line_buffer.h"
 
 static struct termios ORIGINAL_TERM;
 
@@ -23,21 +24,6 @@ void print_result(enum ShellResult r) {
             assert(0);
             break;
     }
-}
-
-void handle_char(char c, char* line, size_t* size, size_t* i) {
-    // TODO: handle arrow keys, backspace
-
-    putchar(c);
-    fflush(stdout);
-    if (*i+1 >= *size) {
-        *size *= 2;
-        line = realloc(line, *size);
-    }
-
-    line[*i] = c;
-    line[*i+1] = '\0';
-    *i = *i + 1;
 }
 
 void restore_original_term() {
@@ -61,24 +47,24 @@ int main(void) {
         printf("%s> ", cwd);
         set_default_color();
 
-        size_t size = 30;
-        size_t idx = 0;
-        char* line = malloc(size);
+        struct LineBuffer line_buf = init_buffer();
         char ch = '\0';
-        while (ch != '\n') {
+        while (1) {
             if (read(STDIN_FILENO, &ch, 1) == 1) {
-                handle_char(ch, line, &size, &idx);
+                if (handle_char(&line_buf, ch)) {
+                    break;
+                }
             }
         }
 
-        Args cmd_args = parse(line);
+        Args cmd_args = parse(line_buf.line);
 
         restore_original_term();
 
         enum ShellResult r = run_command(cmd_args.args);
         print_result(r);
 
-        free(line);
+        free(line_buf.line);
         free(cwd);
         free_args(cmd_args);
     }
