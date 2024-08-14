@@ -9,7 +9,7 @@ enum ShellResult {
 
 /// Input: list of arguments terminated by `NULL`
 ///
-/// Example input: ["grep", "-ir", "TODO", "src/", "|", "less"]
+/// Example input: ["grep", "-ir", "TODO", "src/", "|", "less", NULL]
 enum ShellResult run_command(char** args);
 
 #endif
